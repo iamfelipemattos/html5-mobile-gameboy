@@ -1,3 +1,4 @@
+
 var windowingInitialized = false;
 var inFullscreen = false;
 function windowingPreInitUnsafe() {
@@ -308,9 +309,9 @@ function initPlayer() {
 			gameboy.initLCD();
 		}
 	}
-	document.getElementById("title").style.display = "none";
-	document.getElementById("port_title").style.display = "none";
-	document.getElementById("fullscreenContainer").style.display = "none";
+	//document.getElementById("title").style.display = "none";
+	//document.getElementById("port_title").style.display = "none";
+	//document.getElementById("fullscreenContainer").style.display = "none";
 }
 function fullscreenPlayer() {
 	if (typeof gameboy == "object" && gameboy != null && !gameboy.canvasFallbackHappened) {

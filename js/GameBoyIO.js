@@ -1,7 +1,7 @@
 var gameboy = null;						//GameBoyCore object.
 var gbRunInterval;						//GameBoyCore Timer
 var settings = [						//Some settings.
-	true, 								//Turn on sound.
+	false, 								//Turn on sound.
 	false,								//Force Mono sound.
 	false,								//Give priority to GameBoy mode
 	[39, 37, 38, 40, 88, 90, 16, 13],	//Keyboard button map.
@@ -10,15 +10,15 @@ var settings = [						//Some settings.
 	[16, 12],							//How many tiles in each direction when using the BMP method (width * height).
 	true,								//Auto Frame Skip
 	29,									//Maximum Frame Skip
-	false,								//Override to allow for MBC1 instead of ROM only (compatibility for broken 3rd-party cartridges).
-	false,								//Override MBC RAM disabling and always allow reading and writing to the banks.
+	true,								//Override to allow for MBC1 instead of ROM only (compatibility for broken 3rd-party cartridges).
+	true,								//Override MBC RAM disabling and always allow reading and writing to the banks.
 	20,									//Audio granularity setting (Sampling of audio every x many machine cycles)
 	10,									//Frameskip base factor
 	17826,								//Target number of machine cycles per loop. (4,194,300 / 1000 * 17)
 	70000,								//Sample Rate
 	0x10,								//How many bits per WAV PCM sample (For browsers that fall back to WAV PCM generation)
-	true,								//Use the GBC BIOS?
-	true,								//Colorize GB mode?
+	false,								//Use the GBC BIOS?
+	false,								//Colorize GB mode?
 	512,								//Sample size for webkit audio.
 	false,								//Whether to display the canvas at 144x160 on fullscreen or as stretched.
 	17,									//Interval for the emulator loop.

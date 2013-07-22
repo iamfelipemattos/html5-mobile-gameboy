@@ -1,380 +1,158 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html>
+<!DOCTYPE HTML>
+<html>
+    <head>
+    <meta charset="utf-8" />
+    <meta content="width=340" name="viewport" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="HandheldFriendly" content="true" />
 
-<html lang="en-US" manifest="gameboy.manifest" xml:lang="en-US" xmlns=
-"http://www.w3.org/1999/xhtml">
-<head>
-    <meta content="initial-scale=1.0;width=640;user-scalable=no;" name="viewport" />
-    <link rel="stylesheet" href="css/gameboy.css" />
+    <link rel="stylesheet" href="css/reset.css" />
     <link rel="stylesheet" href="css/cssboy.css" />
 
     <script type="text/javascript">
-         DEBUG_MESSAGES = true;
+         DEBUG_MESSAGES = false;
          DEBUG_WINDOWING = false;
     </script>
 
-    <script src="js/other/windowStack.js" type="text/javascript"></script>
     <script src="js/other/terminal.js" type="text/javascript"></script>
-    <script src="js/other/opacity.js" type="text/javascript"></script>
     <script src="js/other/gui.js" type="text/javascript"></script>
     <script src="js/other/BMPCanvas.js" type="text/javascript"></script>
     <script src="js/other/base64.js" type="text/javascript"></script>
-    <script src="js/other/transportHandler.js" type="text/javascript"></script>
     <script src="js/other/waveAudio.js" type="text/javascript"></script>
     <script src="js/other/audioRunner.js" type="text/javascript"></script>
-    <script src="js/other/json2.js" type="text/javascript"></script>
+
     <script src="js/GameBoyCore.js" type="text/javascript"></script>
     <script src="js/GameBoyIO.js" type="text/javascript"></script>
-    <script src="js/drmario.js" type="text/javascript"></script>
 
-    <title>GameBoy Online</title>
+    <script src="js/drmario.js" type="text/javascript"></script>
+    <script src="js/zepto.min.js" type="text/javascript"></script>
+
+    <title>HTML5 Mobile Gameboy</title>
 </head>
 
 <body>
-    <a href="#" id="pokemon">Pokemon</a>
-    <a href="#" id="drmario">Dr Mario</a>
-
     <div id="gameboy">
-
-        <div id="gameboy-top">
-            <div></div>
-            <div></div>
-            <div><div id="gameboy-top-onoff">OFF - ON</div></div>
-            <div></div>
-            <div></div>
-            <div class="cl"></div>
-            <div></div>
-        </div>
 
         <div id="gameboy-bottom">
 
-          <div id="gameboy-screen-border">
-
-            <div id="gameboy-screen-border-text">
-              <div></div>
-              <div>DOT MATRIX WITH STEREO SOUND</div>
-              <div></div>
-              <div class="cl"></div>
-            </div>
-
-            <div id="gameboy-screen-border-battery">
-              <div></div>
-              <div>BATTERY</div>
-            </div>
-
-            <div id="gameboy-screen">
-
-              <div class="border v">
-                <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-              </div>
-
-              <div id="game">
-                
-              </div>
-
-              <div class="border v">
-                <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-              </div>
-
-            </div>
-
-            <div class="cl"></div>
-
-          </div>
-
-          <div id="gameboy-brand">
-            Nintendo<i>GAME BOY</i>
+          <div id="game">
+            <canvas style="width:340px; height: 306px;"></canvas>
           </div>
 
           <div>
             <div id="gameboy-paddle">
-              <div>
+              <div id="btn-up" class="btn" data-key="38">
                 <div></div><div></div><div></div>
               </div>
-              <div>
+              <div id="btn-left" class="btn" data-key="37">
                 <div></div><div></div><div></div>
               </div>
               <div><div></div></div>
-              <div>
+              <div id="btn-right" class="btn" data-key="39">
                 <div></div><div></div><div></div>
               </div>
               <div class="cl"></div>
-              <div>
+              <div id="btn-down" class="btn" data-key="40">
                 <div></div><div></div><div></div>
               </div>
             </div>
 
             <div id="gameboy-buttons">
               <div id="gameboy-buttons-inset">
-                <div></div><div></div><div class="cl"></div>
+                <div id="btn-b" class="btn" data-key="90"></div><div id="btn-a" class="btn" data-key="88"></div><div class="cl"></div>
               </div>
               <span>B</span><span>A</span>
             </div>
           </div>
           <div class="cl"></div>
 
-          <div id="gameboy-speaker">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-          </div>
-
           <div id="gameboy-startpause">
-            <div>
+            <div id="btn-select" class="btn" data-key="16">
               <div></div>
               SELECT
             </div>
-            <div>
+            <div id="btn-start" class="btn" data-key="13">
               <div></div>
               START
             </div>
             <div class="cl"></div>
           </div>
 
-          <div id="gameboy-phones">PHONES</div>
         </div>
 
     </div>
 
-    <div class="window" id="GameBoy">
-        <div class="menubar">
-            <span id="GameBoy_file_menu">File</span><span id=
-            "GameBoy_settings_menu">Settings</span><span id=
-            "GameBoy_view_menu">View</span><span id=
-            "GameBoy_about_menu">About</span>
-        </div>
+    <div id="terminal_output" style="display:none;"></div>
 
-        <div id="gfx">
-            <canvas></canvas>
+    <script type="text/javascript">
+        $('document').ready(function() {
+          var romStream = base64_decode(drmario);
+          start(document.getElementsByTagName("canvas")[0],  document.getElementsByTagName("canvas")[0], romStream);
+          initPlayer();
 
-            <div id="canvasAltContainer"></div><span id=
-            "title">GameBoy</span><span id="port_title">Online</span>
-        </div>
-    </div>
-
-    <div class="window" id="terminal">
-        <div id="terminal_output"></div>
-
-        <div class="button_rack">
-            <button class="left" id="terminal_clear_button">Clear
-            Messages</button><button class="right" id=
-            "terminal_close_button">Close Terminal</button>
-        </div>
-    </div>
-
-    <div class="window" id="about">
-        <div id="about_message">
-            <h1>GameBoy Online</h1>
-
-            <p>This is a GameBoy Color emulator written in JavaScript, with
-            small portions of code ported from MeBoy.</p>
-
-            <p>The audio backend attempts to use the Mozilla proprietary
-            mozWriteAudio first, then if necessary falls back to WAV PCM
-            formatted audio in browsers that implement it through data
-            URIs.</p>
-
-            <p>A browser that can use the CanvasPixelArray implementation of
-            the canvas element or can display BMP formatted images through data
-            URIs is required to run the graphics display.</p>
-
-            <p>Save states are implemented through the window.localStorage
-            object, and are serialized/deserialized through JSON. In order for
-            save states to work properly on most browsers, you need set the
-            maximum size limit for DOM storage higher, to meet the needs of the
-            emulator's save data size.</p>
-
-            <p>For the reference below, this site is not affiliated with it ,
-            nor endorses any actions by it. Please note that downloading and
-            obtaining GameBoy and GameBoy Color rom files may entail illegal
-            activities, and as such are not endorsed and are done at your own
-            risk.</p>
-
-            <p>For more information about MeBoy and its source code, visit
-            <a href="http://arktos.se/meboy/" target=
-            "_blank">http://arktos.se/meboy/</a>.</p>
-        </div>
-
-        <div class="button_rack">
-            <button class="center" id="about_close_button">Close Popup</button>
-        </div>
-    </div>
-
-    <div class="window" id="settings">
-        <div id="toggle_settings">
-            <div class="setting">
-                <span>Enable Sound (Experimental):</span><input checked=
-                "checked" id="enable_sound" type="checkbox" />
-            </div>
-
-            <div class="setting">
-                <span>Force Mono Sound:</span><input id="enable_mono_sound"
-                type="checkbox" />
-            </div>
-
-            <div class="setting">
-                <span>GB mode has priority over GBC mode:</span><input id=
-                "disable_colors" type="checkbox" />
-            </div>
-
-            <div class="setting">
-                <span>Use GBC BIOS (Note: Overrides GB
-                priority):</span><input checked="checked" id="enable_gbc_bios"
-                type="checkbox" />
-            </div>
-
-            <div class="setting">
-                <span>The data URI BMP method has priority over the canvas tag
-                method:</span><input id="bmp_method" type="checkbox" />
-            </div>
-
-            <div class="setting">
-                <span>Auto frame skip:</span><input checked="checked" id=
-                "auto_frameskip" type="checkbox" />
-            </div>
-
-            <div class="setting">
-                <span>Override ROM only cartridge typing to
-                MBC1:</span><input checked="checked" id="rom_only_override"
-                type="checkbox" />
-            </div>
-
-            <div class="setting">
-                <span>Always allow reading and writing to the MBC
-                banks:</span><input checked="checked" id="mbc_enable_override"
-                type="checkbox" />
-            </div>
-
-            <div class="setting">
-                <span>Colorize Classic GameBoy Palettes:</span><input checked=
-                "checked" id="enable_colorization" type="checkbox" />
-            </div>
-
-            <div class="setting">
-                <span>Minimal view on fullscreen:</span><input checked=
-                "checked" id="do_minimal" type="checkbox" />
-            </div>
-
-            <div class="setting">
-                <span>Resize canvas directly in JavaScript:</span><input id=
-                "software_resizing" type="checkbox" />
-            </div>
-
-            <div class="setting">
-                <span>Disallow typed arrays to be used:</span><input id=
-                "typed_arrays_disallow" type="checkbox" />
-            </div>
-        </div>
-
-        <div class="button_rack">
-            <button class="center" id="settings_close_button">Close
-            Settings</button>
-        </div>
-    </div>
-
-    <ul class="menu" id="GameBoy_file_popup">
-        <li>Open As
-
-            <ul class="menu">
-                <li id="data_uri_clicker">Base 64 Encoding</li>
-
-                <li id="external_file_clicker">URL Address</li>
-
-                <li id="internal_file_clicker">Local File</li>
-
-                <li id="open_saved_clicker">Saved State
-
-                    <ul class="menu" id="save_states"></ul>
-                </li>
-            </ul>
-        </li>
-
-        <li id="save_state_clicker">Save State</li>
-
-        <li id="restart_cpu_clicker">Restart</li>
-
-        <li id="run_cpu_clicker">Resume</li>
-
-        <li id="kill_cpu_clicker">Pause</li>
-    </ul>
-
-    <ul class="menu" id="GameBoy_view_popup">
-        <li id="view_terminal">Terminal</li>
-
-        <li id="view_instructions">Instructions</li>
-
-        <li id="view_fullscreen">Fullscreen Mode</li>
-    </ul>
-
-    <div class="window" id="input_select">
-        <form>
-            <input id="local_file_open" type="file" />
-        </form>
-
-        <div class="button_rack">
-            <button class="center" id="input_select_close_button">Close File
-            Input</button>
-        </div>
-    </div>
-
-    <div class="window" id="instructions">
-        <div id="keycodes">
-            <h1>Keyboard Controls:</h1>
-
-            <ul>
-                <li>X is A.</li>
-
-                <li>Z is B.</li>
-
-                <li>Shift is Select.</li>
-
-                <li>Enter is Start.</li>
-
-                <li>The d-pad is the control pad.</li>
-
-                <li>The escape key (esc) allows you to get in and out of
-                fullscreen mode.</li>
-            </ul>
-        </div>
-
-        <div class="button_rack">
-            <button class="center" id="instructions_close_button">Close
-            Instructions</button>
-        </div>
-    </div>
-
-    <div id="fullscreenContainer">
-        <canvas class="maximum" id="fullscreen"></canvas>
-    </div><script type="text/javascript">
-         try {
-            addEvent("DOMContentLoaded", document, windowingPreInitUnsafe);
-            addEvent("readystatechange", document, windowingPreInitSafe);
-            addEvent("load", document, windowingPreInitUnsafe);
-         }
-         catch (error) {
-            alert("Could not initialize the emulator properly. Please try using a standards compliant browser.");
-         }
-
-        addEvent("click", document.getElementById("pokemon"), function () {
-            var romStream = base64_decode(pokemon);
-            cout(romStream.length + " bytes of base64 decoded data retrieved by XHR (text length of " + pokemon.length + ").", 0);
-            start(document.getElementsByTagName("canvas")[0],  document.getElementById("canvasAltContainer"), romStream);
-            initPlayer();
-
-            return false;
+          return false;
         });
 
-        addEvent("click", document.getElementById("drmario"), function () {
+        // ### keycodes ###
+        // up = 38
+        // down = 40
+        // left = 37
+        // right = 39
+        // a = 88
+        // b = 90
+        // select = 16
+        // start = 13
 
-            var romStream = base64_decode(drmario);
-            cout(romStream.length + " bytes of base64 decoded data retrieved by XHR (text length of " + drmario.length + ").", 0);
-            start(document.getElementsByTagName("canvas")[0],  document.getElementById("canvasAltContainer"), romStream);
-            initPlayer();
+        $(".btn").bind("touchstart", function(e){
+          GameBoyMouseDown($(this).attr('data-key'));
+          e.preventDefault();
+          return false;
+        });
 
-            return false;
+        /*
+        $(".btn").bind("mousedown", function(e){
+          GameBoyMouseDown($(this).attr('data-key'));
+          e.preventDefault();
+          return false;
+        });
+        */
+
+        $(".btn").bind("touchend", function(e){
+          GameBoyMouseUp($(this).attr('data-key'));
+          e.preventDefault();
+          return false;
+        });
+
+        /*
+        $(".btn").bind("mouseup", function(e){
+          GameBoyMouseUp($(this).attr('data-key'));
+          e.preventDefault();
+          return false;
+        });
+        */
+
+        function GameBoyMouseDown(keycode) {
+          gameboy.JoyPadEvent(matchKey(parseInt(keycode)), true);
+        }
+
+        function GameBoyMouseUp(keycode) {
+          gameboy.JoyPadEvent(matchKey(parseInt(keycode)), false);
+        }
+
+        // Disable double tap zoom
+        $('#gameboy-buttons').bind("touchstart", function(e) {
+          e.preventDefault();
+          return false;
+        });
+
+        $('#gameboy-paddle').bind("touchstart", function(e) {
+          e.preventDefault();
+          return false;
+        });
+
+        $('#gameboy-startpause').bind("touchstart", function(e) {
+          e.preventDefault();
+          return false;
         });
     </script>
 </body>
